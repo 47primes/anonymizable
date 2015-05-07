@@ -1,0 +1,12 @@
+*.gem
+*.swp
+.bundle
+.config
+.rvmrc
+.DS_Store
+Gemfile.lock
+spec/debug.log
+spec/*.db
+coverage
+pkg
+rdoc
