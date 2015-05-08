@@ -1,38 +1,34 @@
-ActiveRecord::Schema.define(:version => 0) do
+ActiveRecord::Schema.define(version: 0) do
 
-  create_table :customers, :force => true do |t|
-    t.string :first_name
-    t.string :last_name
-    t.string :email
-    t.string :encrypted_password
+  create_table :users, force: true do |t|
+    t.string  :first_name, null: false
+    t.string  :last_name,  null: false
+    t.string  :email,      null: false
+    t.string  :encrypted_password
     t.timestamps
   end
 
-  create_table :addresses, :force => true do |t|
-    t.integer :number
-    t.string :street
-    t.string :city
-    t.string :state
-    t.string :zip_code
-  end
-
-  create_table :payment_methods, :force => true do |t|
-    t.string :name
+  create_table :posts, force: true do |t|
+    t.integer :user_id
+    t.string  :subject
+    t.text    :content
     t.timestamps
   end
 
-  create_table :credit_cards, :force => true do |t|
-    t.integer :payment_method_id
-    t.integer :last_four
-    t.string :name
-    t.string :card_type
+  create_table :comments, force: true do |t|
+    t.integer :user_id
+    t.integer :post_id, null: false
+    t.text    :text
     t.timestamps
   end
 
-  create_table :shopping_cart, :force => true do |t|
-    t.integer :customer_id
-    t.integer :items
-    t.integer :total
+  create_table :images, force: true do |t|
+    t.integer :image_id
+    t.integer :user_id
+    t.integer :width
+    t.integer :height
+    t.binary  :data
+    t.string  :caption
     t.timestamps
   end
 

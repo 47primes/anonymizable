@@ -9,6 +9,8 @@ module Anonymizable
                 :attrs_to_nullify,
                 :attrs_to_anonymize,
                 :associations_to_anonymize,
+                :associations_to_delete,
+                :associations_to_destroy,
                 :post_anonymization_callbacks
 
     def initialize(klass)
@@ -17,6 +19,8 @@ module Anonymizable
       @attrs_to_nullify             = Set.new
       @attrs_to_anonymize           = Hash.new
       @associations_to_anonymize    = Set.new
+      @associations_to_delete       = Set.new
+      @associations_to_destroy      = Set.new
       @post_anonymization_callbacks = Set.new
       @public                       = false
     end
@@ -27,22 +31,18 @@ module Anonymizable
       @guard = callback
     end
 
-    def nullify(*attributes)
-      attributes.each do |attr|
-        validate_attribute(attr)
-      end
+    def attributes(*attrs)
+      @attrs_to_anonymize.merge! attrs.extract_options!
 
-      @attrs_to_nullify += attributes
+      attrs.each do |attr|
+          validate_attribute(attr)
+        end
+
+      @attrs_to_nullify += attrs
     end
 
-    def anonymize(attr, callback)
-      validate_callback(callback)
-
-      @attrs_to_anonymize[attr] = callback
-    end
-
-    def associations(*associations)
-      @associations_to_anonymize += associations
+    def associations(*associations, &block)
+      instance_eval(&block)
     end
 
     def after(*callbacks)
@@ -64,9 +64,21 @@ module Anonymizable
 
     private
 
+      def anonymize(*associations)
+        @associations_to_anonymize += associations
+      end
+
+      def delete(*associations)
+        @associations_to_delete += associations
+      end
+
+      def destroy(*associations)
+        @associations_to_destroy += associations
+      end
+
       def validate_callback(callback)
         if !callback.respond_to?(:call) && !callback.is_a?(String) && !callback.is_a?(Symbol)
-          raise ConfigurationError.new("Expected #{callback} to respond to 'call' or be a string or symbol.\n#{caller.join("\n")}")
+          raise ConfigurationError.new("Expected #{callback} to respond to 'call' or be a string or symbol.")
         end
       end
 

@@ -16,19 +16,19 @@ module Anonymizable
           if block
             @anonymization_config.instance_eval(&block)
           else
-            @anonymization_config.nullify(*attrs)
+            @anonymization_config.attributes(*attrs)
           end
 
           define_method(:anonymize!) do
             return false unless _can_anonymize?
 
-            @original_attributes = attributes.dup
+            original_attributes = attributes.dup
             transaction do
               _anonymize_by_nullification
               _anonymize_by_call
               _anonymize_associations
             end
-            _perform_post_anonymization_callbacks
+            _perform_post_anonymization_callbacks(original_attributes)
             true
           end
 
@@ -90,12 +90,12 @@ module Anonymizable
           end
         end
 
-        def _perform_post_anonymization_callbacks
+        def _perform_post_anonymization_callbacks(original_attributes)
           self.class.anonymization_config.post_anonymization_callbacks do |callback|
             if callback.respond_to?(:call)
-              callback.call(@original_attributes)
+              callback.call(original_attributes)
             else
-              self.send callback, @original_attributes
+              self.send callback, original_attributes
             end
           end
         end

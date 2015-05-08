@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Anonymizable::Configuration do
 
-  let(:config) { Customer.anonymization_config }
+  let(:config) { User.anonymization_config }
 
   describe "only_if" do
 
@@ -19,22 +19,20 @@ describe Anonymizable::Configuration do
     end
 
     it "should fail if not passed a Proc, String, or Symbol" do
-      expect { config.only_if true }.to raise_error(Anonymizable::ConfigurationError)
+      expect { config.only_if true }.to raise_error(Anonymizable::ConfigurationError, "Expected true to respond to 'call' or be a string or symbol.")
     end
 
   end
 
-  describe "nullify" do
+  describe "attributes" do
 
     it "should set database columns to nullify" do
       expect(config.attrs_to_nullify).to contain_exactly :first_name, :last_name
     end
 
-    it "should fail if any attribute passed is not defined in the model"
-
-  end
-
-  describe "anonymize" do
+    it "should fail if any attribute passed is not defined in the model" do
+      expect { config.attributes :middle_name }.to raise_error(Anonymizable::ConfigurationError, "Nonexitent attribute middle_name on User.")
+    end
 
     it "should set proc by which to anonymize model attribute" do
       expect(config.attrs_to_anonymize[:email]).to be_a Proc
@@ -48,16 +46,30 @@ describe Anonymizable::Configuration do
 
   describe "associations" do
 
-    it "should set names of associations to anonymize" do
-      expect(config.associations_to_anonymize).to contain_exactly :addresses, :credit_cards, :shopping_cart
+    describe "anonymize" do
+      it "should set names of associations to anonymize" do
+        expect(config.associations_to_anonymize).to contain_exactly :posts, :comments
+      end
     end
+
+    describe "delete" do
+      it "should set names of associations to delete" do
+        expect(config.associations_to_delete).to contain_exactly :avatar
+      end
+    end
+
+    describe "destroy" do
+      it "should set names of associations to destroy" do
+        expect(config.associations_to_destroy).to contain_exactly :images
+      end
+    end    
 
   end
 
   describe "after" do
 
     it "should set name of methods to invoke after anonymization" do
-      expect(config.post_anonymization_callbacks.to_a).to eq [:email_admin]
+      expect(config.post_anonymization_callbacks.to_a).to eq [:email_customer, :email_admin]
     end
 
     it "should set proc to call after anonymization" do
@@ -65,7 +77,7 @@ describe Anonymizable::Configuration do
 
       config.after proc
 
-      expect(config.post_anonymization_callbacks.to_a).to eq [:email_admin, proc]
+      expect(config.post_anonymization_callbacks.to_a).to eq [:email_customer, :email_admin, proc]
     end
 
   end
@@ -77,7 +89,7 @@ describe Anonymizable::Configuration do
     end
 
     it "should fail if passed anything other than a boolean" do
-      expect { config.public "foo" }.to raise_error(Anonymizable::ConfigurationError)
+      expect { config.public "foo" }.to raise_error(Anonymizable::ConfigurationError, "boolean expected")
     end
 
   end
