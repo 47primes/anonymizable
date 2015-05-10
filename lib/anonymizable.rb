@@ -14,6 +14,8 @@ module Anonymizable
         def anonymizable(*attrs, &block)
           @anonymization_config ||= Configuration.new(self)
           if block
+            options = attrs.extract_options!
+            @anonymization_config.send(:set_public) if options[:public]
             @anonymization_config.instance_eval(&block)
           else
             @anonymization_config.attributes(*attrs)
@@ -82,24 +84,20 @@ module Anonymizable
 
         def _delete_associations
           self.class.anonymization_config.associations_to_delete.each do |association|
-            if self.send(association)
-              if self.send(association).respond_to?(:each)
-                self.send(association).each {|a| a.delete }
-              else
-                self.send(association).delete
-              end
+            if self.send(association).respond_to?(:each)
+              self.send(association).delete_all
+            elsif self.send(association)
+              self.send(association).delete
             end
           end
         end
 
         def _destroy_associations
           self.class.anonymization_config.associations_to_destroy.each do |association|
-            if self.send(association)
-              if self.send(association).respond_to?(:each)
-                self.send(association).each {|a| a.destroy }
-              else
-                self.send(association).destroy!
-              end
+            if self.send(association).respond_to?(:each)
+              self.send(association).destroy_all
+            elsif self.send(association)
+              self.send(association).destroy
             end
           end
         end

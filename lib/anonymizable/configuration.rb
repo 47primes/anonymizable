@@ -53,15 +53,15 @@ module Anonymizable
       @post_anonymization_callbacks += callbacks
     end
 
-    def public
-      @public = true
-    end
-
     def public?
       @public
     end
 
     private
+
+      def set_public
+        @public = true
+      end
 
       def anonymize(*associations)
         @associations_to_anonymize += associations

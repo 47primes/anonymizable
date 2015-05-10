@@ -54,7 +54,7 @@ describe Anonymizable::Configuration do
 
     describe "delete" do
       it "should set names of associations to delete" do
-        expect(config.associations_to_delete).to contain_exactly :avatar
+        expect(config.associations_to_delete).to contain_exactly :avatar, :likes
       end
     end
 
@@ -82,7 +82,7 @@ describe Anonymizable::Configuration do
 
   end
 
-  describe "public" do
+  describe "set_public" do
 
     it "should set the public flag" do
       expect(config.public?).to eq true

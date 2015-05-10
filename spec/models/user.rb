@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
 
-  anonymizable do
+  anonymizable public: true do
     only_if :can_anonymize?
 
     attributes  :first_name, :last_name, :profile,
@@ -9,13 +9,11 @@ class User < ActiveRecord::Base
 
     associations do
       anonymize :posts, :comments
-      delete    :avatar
+      delete    :avatar, :likes
       destroy   :images
     end
 
     after :email_user, :email_admin
-
-    public
   end
 
   belongs_to  :role
@@ -23,8 +21,7 @@ class User < ActiveRecord::Base
   has_many    :comments
   has_one     :avatar, foreign_key: :profile_id
   has_many    :images
-  has_many    :likes, through: :post
-  has_many    :likes_given, class_name: "Like"
+  has_many    :likes
 
   def can_anonymize?
     !role.try(:admin?)

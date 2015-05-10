@@ -38,9 +38,8 @@ describe Anonymizable do
 
     it "should roll back the transaction if anonymization fails" do
       class Admin < User
-        anonymizable do
+        anonymizable public: true do
           attributes :role_id
-          public
         end
       end
 
@@ -86,9 +85,6 @@ describe Anonymizable do
       post = FactoryGirl.create(:post, user: user)
       comment = FactoryGirl.create(:comment, post: post, user: user)
 
-      expect_any_instance_of(Post).to receive(:anonymize!).and_call_original
-      expect_any_instance_of(Comment).to receive(:anonymize!).and_call_original
-
       user.anonymize!
 
       post.reload
@@ -100,33 +96,30 @@ describe Anonymizable do
 
     it "should destroy specified associations" do
       user = FactoryGirl.create(:user)
-      image = FactoryGirl.create(:image, user: user)
-
-      expect_any_instance_of(Image).to receive(:destroy).and_call_original
+      3.times { FactoryGirl.create(:image, user: user) }
 
       user.anonymize!
       
-      expect(user.images(true).count).to eq(0)
+      expect(user.images(true).count).to eq(0)      
     end
 
     it "should delete specified associations" do
       avatar = FactoryGirl.create(:avatar)
       user = avatar.user
-
-      expect_any_instance_of(Avatar).to receive(:delete).and_call_original
+      2.times { FactoryGirl.create(:like, user: user) }
 
       user.anonymize!
 
       expect(user.avatar(true)).to be_nil
+      expect(user.likes(true).count).to eq(0)
     end
 
     it "should fail if the specified association is not defined on the model" do
       class Customer < User
-        anonymizable do
+        anonymizable public: true do
           associations do
             anonymize :shopping_cart
           end
-          public
         end
       end
 
@@ -138,9 +131,8 @@ describe Anonymizable do
 
     it "should fail if after callback is not defined" do
       class Person < User
-        anonymizable do
+        anonymizable public: true do
           after :foo
-          public
         end
       end
 
@@ -152,9 +144,8 @@ describe Anonymizable do
 
     it "should fail if after callback method doesn't receive the correct number of arguments" do
       class Person < User
-        anonymizable do
+        anonymizable public: true do
           after :foo
-          public
         end
 
         def foo
@@ -169,14 +160,12 @@ describe Anonymizable do
 
     it "should not rollback the transaction if a failure occurs in an after callback" do
       class Employee < User
-        anonymizable do
+        anonymizable public: true do
           attributes  :first_name, :last_name, :profile,
                       email: Proc.new {|c| "anonymized.user.#{c.id}@anonymizable.io" }, 
                       password: :random_password
 
           after Proc.new { raise "failure!" }
-
-          public
         end
       end
 
