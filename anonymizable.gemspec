@@ -20,5 +20,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec", "~> 3.2"
   s.add_development_dependency "sqlite3", "~> 1.3"
   s.add_development_dependency "database_cleaner", "~> 1.0"
-  s.add_development_dependency "bcrypt", "~> 3.1"
+  s.add_development_dependency "factory_girl", "~> 4.5"
 end

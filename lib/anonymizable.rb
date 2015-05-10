@@ -2,7 +2,7 @@ require "active_record"
 require "anonymizable/configuration"
 
 module Anonymizable
-  class AnonymizeError < Exception; end
+  class AnonymizeError < StandardError; end
 
   def self.extended(klass)
 
@@ -12,7 +12,7 @@ module Anonymizable
         attr_reader :anonymization_config
 
         def anonymizable(*attrs, &block)
-          @anonymization_config = Configuration.new(self)
+          @anonymization_config ||= Configuration.new(self)
           if block
             @anonymization_config.instance_eval(&block)
           else
@@ -27,6 +27,8 @@ module Anonymizable
               _anonymize_by_nullification
               _anonymize_by_call
               _anonymize_associations
+              _delete_associations
+              _destroy_associations
             end
             _perform_post_anonymization_callbacks(original_attributes)
             true
@@ -53,49 +55,61 @@ module Anonymizable
         end
 
         def _anonymize_by_nullification
+          return if self.class.anonymization_config.attrs_to_nullify.empty?
           update_hash = self.class.anonymization_config.attrs_to_nullify.inject({}) {|memo, attr| memo[attr] = nil; memo}
           self.class.where(id: self.id).update_all(update_hash)
         end
 
         def _anonymize_by_call
           self.class.anonymization_config.attrs_to_anonymize.each do |attr, proc|
-            begin
-              if proc.respond_to?(:call)
-                update_attribute attr, proc.call(self)
-              else
-                update_attribute attr, self.send(proc)
-              end
-            rescue => e
-              raise AnonymizeError.new("Anonymization of attribute #{attr} with #{proc} failed due to an error.\n#{e.message}\n#{caller.join("\n")}")
+            if proc.respond_to?(:call)
+              update_attribute attr, proc.call(self)
+            else
+              update_attribute attr, self.send(proc)
             end
           end
         end
 
         def _anonymize_associations
           self.class.anonymization_config.associations_to_anonymize.each do |association|
+            if self.send(association).respond_to?(:each)
+              self.send(association).each {|a| a.send(:anonymize!) }
+            elsif self.send(association)
+              self.send(association).send(:anonymize!)
+            end
+          end
+        end
+
+        def _delete_associations
+          self.class.anonymization_config.associations_to_delete.each do |association|
+            if self.send(association)
               if self.send(association).respond_to?(:each)
-                begin
-                  self.send(association).each {|a| a.send(:anonymize!) }
-                rescue => e
-                  raise AnonymizeError.new("Anonymization of collection #{association} failed due to an error.\n#{e.message}\n#{caller.join("\n")}")
-                end
-              elsif self.send(association)
-                begin
-                  self.send(association).send(:anonymize!)
-                rescue => e
-                  raise AnonymizeError.new("Anonymization of association #{association} failed due to an error.\n#{e.message}\n#{caller.join("\n")}")
-                end                  
+                self.send(association).each {|a| a.delete }
+              else
+                self.send(association).delete
               end
-            
+            end
+          end
+        end
+
+        def _destroy_associations
+          self.class.anonymization_config.associations_to_destroy.each do |association|
+            if self.send(association)
+              if self.send(association).respond_to?(:each)
+                self.send(association).each {|a| a.destroy }
+              else
+                self.send(association).destroy!
+              end
+            end
           end
         end
 
         def _perform_post_anonymization_callbacks(original_attributes)
-          self.class.anonymization_config.post_anonymization_callbacks do |callback|
+          self.class.anonymization_config.post_anonymization_callbacks.each do |callback|
             if callback.respond_to?(:call)
               callback.call(original_attributes)
             else
-              self.send callback, original_attributes
+              self.send(callback, original_attributes).inspect
             end
           end
         end

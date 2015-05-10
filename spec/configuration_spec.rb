@@ -27,7 +27,7 @@ describe Anonymizable::Configuration do
   describe "attributes" do
 
     it "should set database columns to nullify" do
-      expect(config.attrs_to_nullify).to contain_exactly :first_name, :last_name
+      expect(config.attrs_to_nullify).to contain_exactly :first_name, :last_name, :profile
     end
 
     it "should fail if any attribute passed is not defined in the model" do
@@ -69,7 +69,7 @@ describe Anonymizable::Configuration do
   describe "after" do
 
     it "should set name of methods to invoke after anonymization" do
-      expect(config.post_anonymization_callbacks.to_a).to eq [:email_customer, :email_admin]
+      expect(config.post_anonymization_callbacks.to_a).to eq [:email_user, :email_admin]
     end
 
     it "should set proc to call after anonymization" do
@@ -77,7 +77,7 @@ describe Anonymizable::Configuration do
 
       config.after proc
 
-      expect(config.post_anonymization_callbacks.to_a).to eq [:email_customer, :email_admin, proc]
+      expect(config.post_anonymization_callbacks.to_a).to eq [:email_user, :email_admin, proc]
     end
 
   end
@@ -86,10 +86,6 @@ describe Anonymizable::Configuration do
 
     it "should set the public flag" do
       expect(config.public?).to eq true
-    end
-
-    it "should fail if passed anything other than a boolean" do
-      expect { config.public "foo" }.to raise_error(Anonymizable::ConfigurationError, "boolean expected")
     end
 
   end

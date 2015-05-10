@@ -53,9 +53,8 @@ module Anonymizable
       @post_anonymization_callbacks += callbacks
     end
 
-    def public(boolean)
-      raise ConfigurationError.new("boolean expected") if !boolean.is_a?(TrueClass) && !boolean.is_a?(FalseClass)
-      @public = boolean
+    def public
+      @public = true
     end
 
     def public?
