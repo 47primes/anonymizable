@@ -67,7 +67,7 @@ describe Anonymizable do
       user = FactoryGirl.create(:user)
       user.anonymize!
 
-      expect(user.email).to eq("anonymized.user.#{user.id}@anonymizable.io")
+      expect(user.reload.email).to eq("anonymized.user.#{user.id}@anonymizable.io")
     end
 
     it "should anonymize by method call" do
@@ -77,7 +77,7 @@ describe Anonymizable do
 
       user.anonymize!
 
-      expect(user.password == password).to eq(false)
+      expect(user.reload.password == password).to eq(false)
     end
 
     it "should call anonymize! on specified associations" do

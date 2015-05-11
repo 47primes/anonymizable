@@ -63,13 +63,17 @@ module Anonymizable
         end
 
         def _anonymize_by_call
-          self.class.anonymization_config.attrs_to_anonymize.each do |attr, proc|
+          return if self.class.anonymization_config.attrs_to_anonymize.empty?
+          update_hash = self.class.anonymization_config.attrs_to_anonymize.inject({}) do |memo, array|
+            attr, proc = array
             if proc.respond_to?(:call)
-              update_attribute attr, proc.call(self)
+              memo[attr] = proc.call(self)
             else
-              update_attribute attr, self.send(proc)
+              memo[attr] = self.send(proc)
             end
+            memo
           end
+          self.class.where(id: self.id).update_all(update_hash)
         end
 
         def _anonymize_associations
@@ -107,7 +111,7 @@ module Anonymizable
             if callback.respond_to?(:call)
               callback.call(original_attributes)
             else
-              self.send(callback, original_attributes).inspect
+              self.send(callback, original_attributes)
             end
           end
         end
