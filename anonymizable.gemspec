@@ -6,9 +6,9 @@ Gem::Specification.new do |s|
   s.name          = "anonymizable"
   s.description   = "Delete data without deleting it"
   s.summary       = "Anonymize columns in ActiveRecord models"
-  s.homepage      = "https://github.com/silvercar/anonymizable"
+  s.homepage      = "https://github.com/47primes/anonymizable"
   s.authors       = ["Mike Bradford"]
-  s.email         = ["mike.bradford@silvercar.com"]
+  s.email         = ["mbradford@47primes.com"]
   s.version       = Anonymizable::VERSION
   s.platform      = Gem::Platform::RUBY
   s.license       = 'MIT'
