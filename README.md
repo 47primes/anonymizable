@@ -4,7 +4,7 @@ Anonymizable adds the ability to anonymize or delete data in your ActiveRecord m
 
 ## Supported Ruby/Rails Versions
 
-Anonymizable has been tested Rails 3.2.x. Compatibility with other versions is unclear, but pull requests to support these would be received enthusiastically.
+Anonymizable has been tested Rails 3.2.x. Development is underway to support newer Rails versions. In addition, pull requests to support other versions will be received with enthusiasm.
 
 ## Installation
 
