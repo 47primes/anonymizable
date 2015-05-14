@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
     only_if :can_anonymize?
 
     attributes  :first_name, :last_name, :profile,
-                email: Proc.new {|c| "anonymized.user.#{c.id}@anonymizable.io" }, 
+                email: Proc.new {|u| "anonymized.user.#{u.id}@foobar.com" }, 
                 password: :random_password
 
     associations do

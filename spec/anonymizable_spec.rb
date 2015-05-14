@@ -67,7 +67,7 @@ describe Anonymizable do
       user = FactoryGirl.create(:user)
       user.anonymize!
 
-      expect(user.reload.email).to eq("anonymized.user.#{user.id}@anonymizable.io")
+      expect(user.reload.email).to eq("anonymized.user.4@foobar.com")
     end
 
     it "should anonymize by method call" do

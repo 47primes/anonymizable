@@ -26,8 +26,7 @@ module Anonymizable
 
             original_attributes = attributes.dup
             transaction do
-              _anonymize_by_nullification
-              _anonymize_by_call
+              _anonymize_columns
               _anonymize_associations
               _delete_associations
               _destroy_associations
@@ -56,10 +55,21 @@ module Anonymizable
           true
         end
 
-        def _anonymize_by_nullification
-          return if self.class.anonymization_config.attrs_to_nullify.empty?
-          update_hash = self.class.anonymization_config.attrs_to_nullify.inject({}) {|memo, attr| memo[attr] = nil; memo}
-          self.class.where(id: self.id).update_all(update_hash)
+        def _anonymize_columns
+          nullify_hash    = self.class.anonymization_config.attrs_to_nullify.inject({}) {|memo, attr| memo[attr] = nil; memo}
+          anonymize_hash  = self.class.anonymization_config.attrs_to_anonymize.inject({}) do |memo, array|
+                              attr, proc = array
+                              if proc.respond_to?(:call)
+                                memo[attr] = proc.call(self)
+                              else
+                                memo[attr] = self.send(proc)
+                              end
+                              memo
+                            end
+
+          update_hash = nullify_hash.merge anonymize_hash
+
+          self.class.where(id: self.id).update_all(update_hash) unless update_hash.empty?
         end
 
         def _anonymize_by_call
@@ -89,7 +99,7 @@ module Anonymizable
         def _delete_associations
           self.class.anonymization_config.associations_to_delete.each do |association|
             if self.send(association).respond_to?(:each)
-              self.send(association).delete_all
+              self.send(association).each {|r| r.delete}
             elsif self.send(association)
               self.send(association).delete
             end
@@ -99,7 +109,7 @@ module Anonymizable
         def _destroy_associations
           self.class.anonymization_config.associations_to_destroy.each do |association|
             if self.send(association).respond_to?(:each)
-              self.send(association).destroy_all
+              self.send(association).each {|r| r.destroy}
             elsif self.send(association)
               self.send(association).destroy
             end
