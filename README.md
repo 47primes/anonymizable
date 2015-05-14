@@ -102,6 +102,27 @@ In this case, the ```user_id``` column is nullified on any of the user's posts o
 
 You can declare a Proc or method to use as a guard against anonymization. If the Proc or method returns ```ruby false``` or ```ruby nil```, anonymization will short circuit.
 
+```ruby
+  anonymizable public: true do
+    only_if :can_anonymize?
+
+    attributes  :first_name, :last_name,
+                email: Proc.new { |u| "anonymized.user.#{u.id}@foobar.com" }, 
+                password: :random_password
+
+    associations do
+      anonymize :posts, :comments
+      delete    :avatar, :likes
+      destroy   :images
+    end
+
+  end
+
+  def can_anonymize?
+    !admin?
+  end
+```
+
 ### Callbacks
 
 You can declare callbacks that run after anonymization is complete.
