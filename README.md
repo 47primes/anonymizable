@@ -4,14 +4,12 @@ Anonymizable adds the ability to anonymize or delete data in your ActiveRecord m
 
 ## Supported Ruby/Rails Versions
 
-Anonymizable has been tested Rails 3.2.x. Development is underway to support newer Rails versions. In addition, pull requests to support other versions will be received with enthusiasm.
+Anonymizer supports all 2.x versions of Ruby and all Rails versions between 3.2.x and 4.x.
 
 ## Installation
 
-This gem has not yet been published to RubyGems. Until such time, add it to your project by adding the following line in the Gemfile:
-
 ```ruby
-gem 'anonymizable', :git => 'git://github.com/47primes/anonymizable.git'
+gem 'anonymizable'
 ```
 and run `bundle install` from your shell.
 
@@ -156,7 +154,7 @@ It is worth noting that these callbacks are run after the database transaction c
 
 ### Short Syntax
 
-As intimated in the ```Post``` and ```Comment``` examples above, you can call ```anonymize``` without a block, but rather just with an array of columns to nullify and/or anonymization hash. In this case the ```anonymize!``` instance method will always be private.
+As intimated in the ```Post``` and ```Comment``` examples above, you can call ```anonymize``` without a block, but rather just with an array of columns to nullify and/or anonymization hash. In this case the ```Model#anonymize!``` will be private.
 
 ## Contributing
 

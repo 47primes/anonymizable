@@ -7,7 +7,7 @@ require 'logger'
 require 'rspec'
 require 'database_cleaner'
 require 'factory_girl'
-require 'pry'
+require 'yaml'
 
 def load_schema
   config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))

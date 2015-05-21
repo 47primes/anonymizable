@@ -21,6 +21,8 @@ describe Anonymizable do
     it "should be short-circuited by guard" do
       admin = FactoryGirl.create(:admin)
 
+      pp admin.role.admin?
+
       expect(admin.anonymize!).to eq(false)
     end
 

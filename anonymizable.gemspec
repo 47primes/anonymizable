@@ -15,11 +15,10 @@ Gem::Specification.new do |s|
 
   s.files         = `git ls-files`.split("\n")
   s.require_paths = ["lib"]
-  s.add_dependency "activerecord", "~> 3.2"
+  s.add_dependency "activerecord", ">= 3.2", "< 5.0"
 
   s.add_development_dependency "rspec", "~> 3.2"
   s.add_development_dependency "sqlite3", "~> 1.3"
   s.add_development_dependency "database_cleaner", "~> 1.0"
   s.add_development_dependency "factory_girl", "~> 4.5"
-  s.add_development_dependency "pry"
 end

@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
   has_many    :likes
 
   def can_anonymize?
-    !role.try(:admin?)
+    !role.admin?
   end
 
   def random_password
