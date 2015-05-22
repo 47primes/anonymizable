@@ -2,7 +2,9 @@ require "active_record"
 require "anonymizable/configuration"
 
 module Anonymizable
-  class AnonymizeError < StandardError; end
+  AnonymizeError = Class.new(StandardError)
+  DeleteProhibitedError = Class.new(StandardError)
+  DestroyProhibitedError = Class.new(StandardError)
 
   def self.extended(klass)
 
@@ -15,7 +17,8 @@ module Anonymizable
           @anonymization_config ||= Configuration.new(self)
           if block
             options = attrs.extract_options!
-            @anonymization_config.send(:set_public) if options[:public]
+            @anonymization_config.send(:public) if options[:public] == true
+            @anonymization_config.send(:raise_on_delete) if options[:raise_on_delete] == true
             @anonymization_config.instance_eval(&block)
           else
             @anonymization_config.attributes(*attrs)
@@ -37,6 +40,16 @@ module Anonymizable
 
           unless @anonymization_config.public?
             self.send(:private, :anonymize!)
+          end
+
+          if @anonymization_config.raise_on_delete?
+            define_method(:delete) do
+              raise DeleteProhibitedError.new("delete is prohibited on #{self}")
+            end
+
+            define_method(:destroy) do
+              raise DestroyProhibitedError.new("destroy is prohibited on #{self}")
+            end
           end
         end
       end

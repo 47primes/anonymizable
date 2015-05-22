@@ -14,14 +14,24 @@ describe Anonymizable do
       expect(User.public_instance_methods(false)).to include(:anonymize!)
     end
 
+    it "should raise an error if delete is called on the model when raise_on_delete option is set" do
+      user = FactoryGirl.create(:user)
+
+      expect { user.delete }.to raise_error(Anonymizable::DeleteProhibitedError, "delete is prohibited on User")
+    end
+
+    it "should raise an error if destroy is called on the model when raise_on_delete options is set" do
+      user = FactoryGirl.create(:user)
+
+      expect { user.destroy }.to raise_error(Anonymizable::DestroyProhibitedError, "destroy is prohibited on User")
+    end
+
   end
 
   describe "anonymize!" do
 
     it "should be short-circuited by guard" do
       admin = FactoryGirl.create(:admin)
-
-      pp admin.role.admin?
 
       expect(admin.anonymize!).to eq(false)
     end
@@ -69,7 +79,7 @@ describe Anonymizable do
       user = FactoryGirl.create(:user)
       user.anonymize!
 
-      expect(user.reload.email).to eq("anonymized.user.4@foobar.com")
+      expect(user.reload.email).to eq("anonymized.user.#{user.id}@foobar.com")
     end
 
     it "should anonymize by method call" do

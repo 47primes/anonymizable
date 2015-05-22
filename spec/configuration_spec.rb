@@ -82,10 +82,18 @@ describe Anonymizable::Configuration do
 
   end
 
-  describe "set_public" do
+  describe "public" do
 
     it "should set the public flag" do
       expect(config.public?).to eq true
+    end
+
+  end
+
+  describe "raise_on_delete" do
+
+    it "should set the raise_on_delete flag" do
+      expect(config.raise_on_delete?).to eq true
     end
 
   end

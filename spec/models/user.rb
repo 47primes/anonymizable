@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
 
-  anonymizable public: true do
+  anonymizable public: true, raise_on_delete: true do
     only_if :can_anonymize?
 
     attributes  :first_name, :last_name, :profile,

@@ -23,6 +23,7 @@ module Anonymizable
       @associations_to_destroy      = Set.new
       @post_anonymization_callbacks = Set.new
       @public                       = false
+      @raise_on_delete          = false
     end
 
     def only_if(callback)
@@ -57,10 +58,18 @@ module Anonymizable
       @public
     end
 
+    def raise_on_delete?
+      @raise_on_delete
+    end
+
     private
 
-      def set_public
+      def public
         @public = true
+      end
+
+      def raise_on_delete
+        @raise_on_delete = true
       end
 
       def anonymize(*associations)

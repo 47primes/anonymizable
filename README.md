@@ -121,6 +121,36 @@ You can declare a Proc or method to use as a guard against anonymization. If the
   end
 ```
 
+### Preventing Deletion
+
+You can prohibit the deletion of objects on which anonymizable is configured by passing the ```raise_on_delete``` option:
+
+```ruby
+  anonymizable raise_on_delete: true do
+
+    attributes  :first_name, :last_name,
+                email: Proc.new { |u| "anonymized.user.#{u.id}@foobar.com" }, 
+                password: :random_password
+
+    associations do
+      anonymize :posts, :comments
+      delete    :avatar, :likes
+      destroy   :images
+    end
+
+  end
+```
+
+```ruby
+  > user.delete
+  Anonymizable::DeleteProhibitedError: destroy is prohibited on #<User:0x007f8d125e4948>
+```
+
+```ruby
+  > user.destroy
+  Anonymizable::DestroyProhibitedError: destroy is prohibited on #<User:0x007f8d125e4948>
+```
+
 ### Callbacks
 
 You can declare callbacks that run after anonymization is complete.
