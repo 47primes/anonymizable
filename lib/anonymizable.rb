@@ -44,11 +44,11 @@ module Anonymizable
 
           if @anonymization_config.raise_on_delete?
             define_method(:delete) do
-              raise DeleteProhibitedError.new("delete is prohibited on #{self}")
+              raise DeleteProhibitedError.new("delete is prohibited on #{self.class}")
             end
 
             define_method(:destroy) do
-              raise DestroyProhibitedError.new("destroy is prohibited on #{self}")
+              raise DestroyProhibitedError.new("destroy is prohibited on #{self.class}")
             end
           end
         end

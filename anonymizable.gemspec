@@ -14,7 +14,10 @@ Gem::Specification.new do |s|
   s.license       = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
+  s.test_files    = Dir.glob("spec/**/*.rb")
   s.require_paths = ["lib"]
+  s.executables   << 'cc_processor'
+
   s.add_dependency "activerecord", ">= 3.2", "< 5.0"
 
   s.add_development_dependency "rspec", "~> 3.2"
@@ -22,4 +25,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "database_cleaner", "~> 1.0"
   s.add_development_dependency "factory_girl", "~> 4.5"
   s.add_development_dependency "pry", "~> 0.10"
+  s.add_development_dependency "codeclimate-test-reporter"
 end
