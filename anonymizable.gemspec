@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.test_files    = Dir.glob("spec/**/*.rb")
   s.require_paths = ["lib"]
-  s.executables   << 'cc_processor'
 
   s.add_dependency "activerecord", ">= 3.2", "< 5.0"
 
