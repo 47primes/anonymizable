@@ -1,4 +1,4 @@
-# Anonymizable [![Test Coverage](https://codeclimate.com/github/47primes/anonymizable/badges/coverage.svg)](https://codeclimate.com/github/47primes/anonymizable/coverage) [![Build Status](https://travis-ci.org/47primes/anonymizable.svg?branch=master)](https://travis-ci.org/47primes/anonymizable)
+# Anonymizable [![Build Status](https://travis-ci.org/47primes/anonymizable.svg?branch=master)](https://travis-ci.org/47primes/anonymizable) [![Code Climate](https://codeclimate.com/github/47primes/anonymizable/badges/gpa.svg)](https://codeclimate.com/github/47primes/anonymizable) [![Test Coverage](https://codeclimate.com/github/47primes/anonymizable/badges/coverage.svg)](https://codeclimate.com/github/47primes/anonymizable/coverage)
 
 Anonymizable adds the ability to anonymize or delete data in your ActiveRecord models. A good use case for this is when you want to remove user accounts but for statistical or data integrity reasons you want to keep the actual records in your database.
 
