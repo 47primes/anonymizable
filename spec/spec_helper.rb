@@ -20,16 +20,20 @@ def load_schema
 end
 
 def load_models
-  Dir.glob(File.expand_path(File.join(File.dirname(__FILE__), "models/*.rb"))).each {|f| require f}
-  Dir.glob(File.expand_path(File.join(File.dirname(__FILE__), "factories/*.rb"))).each {|f| require f}
+  Dir.glob(File.expand_path(File.join(File.dirname(__FILE__), "models/*.rb"))).each do |f|
+    require f
+  end
+  Dir.glob(File.expand_path(File.join(File.dirname(__FILE__), "factories/*.rb"))).each do |f|
+    require f
+  end
 end
 
 load_schema
 load_models
 
 RSpec.configure do |config|
-  config.color      = true
-  config.formatter  = :documentation
+  config.color = true
+  config.formatter = :documentation
   config.include FactoryGirl::Syntax::Methods
 
   config.before(:suite) do
@@ -37,7 +41,7 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.after(:each) do |example|
+  config.after(:each) do
     DatabaseCleaner.clean
   end
 end

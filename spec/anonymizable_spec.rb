@@ -1,9 +1,7 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Anonymizable do
-
   describe "anonymizable" do
-
     it "should define a private instance method named anonymize!" do
       expect(Post.private_instance_methods(false)).to include(:anonymize!)
       expect(Comment.private_instance_methods(false)).to include(:anonymize!)
@@ -14,22 +12,24 @@ describe Anonymizable do
       expect(User.public_instance_methods(false)).to include(:anonymize!)
     end
 
-    it "should raise an error if delete is called on the model when raise_on_delete option is set" do
+    it "should raise error if delete is called on the model when raise_on_delete option is set" do
       user = FactoryGirl.create(:user)
 
-      expect { user.delete }.to raise_error(Anonymizable::DeleteProhibitedError, "delete is prohibited on User")
+      expect { user.delete }.to raise_error(
+        Anonymizable::DeleteProhibitedError, "delete is prohibited on User"
+      )
     end
 
-    it "should raise an error if destroy is called on the model when raise_on_delete options is set" do
+    it "should raise error if destroy is called on the model when raise_on_delete options is set" do
       user = FactoryGirl.create(:user)
 
-      expect { user.destroy }.to raise_error(Anonymizable::DestroyProhibitedError, "destroy is prohibited on User")
+      expect { user.destroy }.to raise_error(
+        Anonymizable::DestroyProhibitedError, "destroy is prohibited on User"
+      )
     end
-
   end
 
   describe "anonymize!" do
-
     it "should be short-circuited by guard" do
       admin = FactoryGirl.create(:admin)
 
@@ -55,13 +55,12 @@ describe Anonymizable do
         end
       end
 
-      user = Admin.create!  first_name: "Admin", 
-                            last_name: "User", 
-                            profile: "I am an admin. Kinda.",
-                            email: "admin@anonymizable.io",
-                            role: FactoryGirl.create(:role),
-                            password: "foobar"
-
+      user = Admin.create! first_name: "Admin",
+                           last_name: "User",
+                           profile: "I am an admin. Kinda.",
+                           email: "admin@anonymizable.io",
+                           role: FactoryGirl.create(:role),
+                           password: "foobar"
 
       expect { user.anonymize! }.to raise_error(ActiveRecord::StatementInvalid)
 
@@ -111,8 +110,8 @@ describe Anonymizable do
       3.times { FactoryGirl.create(:image, user: user) }
 
       user.anonymize!
-      
-      expect(user.images(true).count).to eq(0)      
+
+      expect(user.images(true).count).to eq(0)
     end
 
     it "should delete specified associations" do
@@ -173,9 +172,9 @@ describe Anonymizable do
     it "should not rollback the transaction if a failure occurs in an after callback" do
       class Employee < User
         anonymizable public: true do
-          attributes  :first_name, :last_name, :profile,
-                      email: Proc.new {|c| "anonymized.user.#{c.id}@anonymizable.io" }, 
-                      password: :random_password
+          attributes :first_name, :last_name, :profile,
+                     email: Proc.new { |c| "anonymized.user.#{c.id}@anonymizable.io" },
+                     password: :random_password
 
           after Proc.new { raise "failure!" }
         end
@@ -196,5 +195,4 @@ describe Anonymizable do
       expect(user.password != "foobar").to eq(true)
     end
   end
-
 end

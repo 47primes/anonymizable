@@ -3,18 +3,18 @@ $:.unshift File.expand_path("../lib", __FILE__)
 require "anonymizable/version"
 
 Gem::Specification.new do |s|
-  s.name          = "anonymizable"
-  s.description   = "Delete data without deleting it"
-  s.summary       = "Anonymize columns in ActiveRecord models"
-  s.homepage      = "https://github.com/47primes/anonymizable"
-  s.authors       = ["Mike Bradford"]
-  s.email         = ["mbradford@47primes.com"]
-  s.version       = Anonymizable::VERSION
-  s.platform      = Gem::Platform::RUBY
-  s.license       = 'MIT'
+  s.name = "anonymizable"
+  s.description = "Delete data without deleting it"
+  s.summary = "Anonymize columns in ActiveRecord models"
+  s.homepage = "https://github.com/47primes/anonymizable"
+  s.authors = ["Mike Bradford"]
+  s.email = ["mbradford@47primes.com"]
+  s.version = Anonymizable::VERSION
+  s.platform = Gem::Platform::RUBY
+  s.license = "MIT"
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = Dir.glob("spec/**/*.rb")
+  s.files = `git ls-files`.split("\n")
+  s.test_files = Dir.glob("spec/**/*.rb")
   s.require_paths = ["lib"]
 
   s.add_dependency "activerecord", ">= 3.2", "< 5.0"
