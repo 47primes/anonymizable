@@ -31,4 +31,10 @@ class User < ActiveRecord::Base
   def random_password
     SecureRandom.hex.sub(/([a-z])/) { |s| s.upcase }
   end
+
+  def email_user(original_attributes)
+  end
+
+  def email_admin(original_attributes)
+  end
 end
